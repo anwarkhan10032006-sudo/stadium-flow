@@ -1,0 +1,8 @@
+{
+  "name": "stadium-iq",
+  "version": "1.0.0",
+  "description": "Smart Event Assistant",
+  "scripts": {
+    "dev": "npx --yes live-server ."
+  }
+}

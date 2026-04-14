@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>StadiumIQ — Smart Stadium Experience</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       AMBIENT BACKGROUND LAYERS
+  ════════════════════════════════════════ -->
+  <div class="bg-orb bg-orb--1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb--2" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="scanline" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════
+       HEADER / NAV
+  ════════════════════════════════════════ -->
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <div class="logo">
+        <div class="logo__hex" aria-hidden="true">
+          <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 1L38.66 11.5V32.5L20 43L1.34 32.5V11.5L20 1Z" stroke="currentColor" stroke-width="1.5" fill="rgba(99,210,255,0.06)"/>
+            <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" font-family="Rajdhani">IQ</text>
+          </svg>
+        </div>
+        <div class="logo__text">
+          <span class="logo__primary">Stadium<strong>IQ</strong></span>
+          <span class="logo__tagline">Smart Experience System</span>
+        </div>
+      </div>
+
+      <div class="header__stadium" style="margin-right: auto; margin-left: 20px;">
+        <div class="select-wrapper">
+          <select id="stadiumSelect" class="field-select field-select--header" aria-label="Select Stadium">
+            <!-- Injected by JS -->
+          </select>
+          <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+
+      <div class="header__status">
+        <div class="status-chip status-chip--live" id="matchStatusChip">
+          <span class="status-chip__dot" id="matchStatusDot"></span>
+          <span id="matchStatusLabel">LIVE DATA</span>
+        </div>
+        <div class="status-chip status-chip--firebase" id="firebaseStatusChip">
+          <span class="status-chip__dot"></span>
+          <span id="firebaseStatusLabel">Connecting…</span>
+        </div>
+        <div class="header__time" id="headerClock">--:--:--</div>
+      </div>
+    </div>
+
+    <!-- Alert Ticker -->
+    <div class="alert-ticker" role="marquee" aria-label="Live alerts">
+      <div class="alert-ticker__label">⚡ LIVE</div>
+      <div class="alert-ticker__track">
+        <div class="alert-ticker__inner" id="tickerInner"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════ -->
+  <main class="main" id="main">
+
+    <div id="mainOverlay" class="main-overlay hidden">
+      <div class="overlay-content">
+        <div class="overlay-icon" id="overlayIcon">🏟️</div>
+        <h2 id="overlayTitle">Stadium Closed</h2>
+        <p id="overlaySub">No active events right now</p>
+      </div>
+    </div>
+
+    <!-- ─── SECTION 1: CROWD DENSITY ─── -->
+    <section class="panel" id="panel-crowd" aria-labelledby="crowd-heading">
+      <div class="panel__header">
+        <div class="panel__title-group">
+          <div class="panel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="panel__title" id="crowd-heading">Crowd Density</h2>
+            <p class="panel__sub">Real-time occupancy · All zones</p>
+          </div>
+        </div>
+        <button class="icon-btn" id="refreshCrowdBtn" aria-label="Refresh crowd data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="crowd-grid" id="crowdGrid" role="list" aria-label="Zone crowd levels">
+        <!-- Injected by JS -->
+      </div>
+
+      <div class="panel__footer">
+        <div class="last-updated">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Updated <span id="crowdLastUpdated">just now</span>
+        </div>
+        <div class="data-source-badge" id="dataSourceBadge">● Simulated</div>
+      </div>
+    </section>
+
+    <!-- ─── SECTION 2: SMART NAVIGATION ─── -->
+    <section class="panel" id="panel-nav" aria-labelledby="nav-heading">
+      <div class="panel__header">
+        <div class="panel__title-group">
+          <div class="panel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="panel__title" id="nav-heading">Smart Navigation</h2>
+            <p class="panel__sub">Least-congested route · Live pathfinding</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <div class="field-group">
+          <label class="field-label" for="navFrom">FROM</label>
+          <div class="select-wrapper">
+            <select id="navFrom" class="field-select" aria-label="Starting location">
+              <option value="entrance">Main Entrance</option>
+              <option value="gateA">Gate A</option>
+              <option value="gateB">Gate B</option>
+              <option value="parking">Parking Lot</option>
+              <option value="foodCourt">Food Court</option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <div class="nav-divider" aria-hidden="true">
+          <div class="nav-divider__line"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <div class="nav-divider__line"></div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="navTo">TO</label>
+          <div class="select-wrapper">
+            <select id="navTo" class="field-select" aria-label="Destination">
+              <option value="mySeat">My Seat (G7–Row 12)</option>
+              <option value="foodCourt">Food Court</option>
+              <option value="restroom">Nearest Restroom</option>
+              <option value="exitA">Exit A</option>
+              <option value="exitB">Exit B</option>
+              <option value="medic">Medical Bay</option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <button class="cta-btn" id="getRouteBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Get Route
+        </button>
+      </div>
+
+      <div class="route-result hidden" id="routeResult" role="region" aria-label="Route details" aria-live="polite">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- ─── SECTION 3: QUEUE OPTIMIZER ─── -->
+    <section class="panel" id="panel-queue" aria-labelledby="queue-heading">
+      <div class="panel__header">
+        <div class="panel__title-group">
+          <div class="panel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+              <circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="panel__title" id="queue-heading">Queue Optimizer</h2>
+            <p class="panel__sub">Food & services · Ranked by wait time</p>
+          </div>
+        </div>
+        <button class="icon-btn" id="refreshQueuesBtn" aria-label="Refresh queue data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+      <div class="queue-list" id="queueList" role="list" aria-label="Stall queue times"></div>
+    </section>
+
+    <!-- ─── SECTION 4: EXIT PREDICTOR ─── -->
+    <section class="panel panel--accent" id="panel-exit" aria-labelledby="exit-heading">
+      <div class="panel__header">
+        <div class="panel__title-group">
+          <div class="panel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="panel__title" id="exit-heading">Exit Rush Predictor</h2>
+            <p class="panel__sub">AI-powered departure timing</p>
+          </div>
+        </div>
+        <span class="ai-badge">AI</span>
+      </div>
+      <div class="exit-timeline" id="exitTimeline" role="list" aria-label="Exit timing predictions"></div>
+      <div class="exit-recommendation" id="exitRec" aria-live="polite"></div>
+    </section>
+
+    <!-- ─── SECTION 5: SMART ALERTS ─── -->
+    <section class="panel" id="panel-alerts" aria-labelledby="alerts-heading">
+      <div class="panel__header">
+        <div class="panel__title-group">
+          <div class="panel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="panel__title" id="alerts-heading">Smart Alerts</h2>
+            <p class="panel__sub">Situational awareness · Auto-updated</p>
+          </div>
+        </div>
+        <div class="alert-counter" id="alertCounter" aria-label="Alert count">0</div>
+      </div>
+      <div class="alerts-grid" id="alertsGrid" role="log" aria-live="polite" aria-label="Live alerts"></div>
+    </section>
+
+    <!-- ─── SECTION 6: NEARBY SERVICES ─── -->
+    <section class="panel panel--maps" id="panel-maps" aria-labelledby="maps-heading">
+      <div class="panel__header">
+        <div class="panel__title-group">
+          <div class="panel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="panel__title" id="maps-heading">Nearby Services</h2>
+            <p class="panel__sub">Google Maps · One-tap access</p>
+          </div>
+        </div>
+      </div>
+      <div class="maps-grid" id="mapsGrid" role="list" aria-label="Nearby services"></div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════
+       BOTTOM NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+    <button class="bnav-item active" data-target="panel-crowd" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Crowd</span>
+    </button>
+    <button class="bnav-item" data-target="panel-nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      <span>Navigate</span>
+    </button>
+    <button class="bnav-item" data-target="panel-queue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Queues</span>
+    </button>
+    <button class="bnav-item" data-target="panel-exit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Exit</span>
+    </button>
+    <button class="bnav-item" data-target="panel-alerts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span>Alerts</span>
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       TOAST NOTIFICATION
+  ════════════════════════════════════════ -->
+  <div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- Firebase SDK (modular, loaded async) -->
+  <script type="module">
+    // Firebase is loaded lazily in script.js after DOMContentLoaded.
+    // This empty module block prevents any parse errors if Firebase SDK is unavailable.
+  </script>
+  <script src="script.js" defer></script>
+</body>
+</html>

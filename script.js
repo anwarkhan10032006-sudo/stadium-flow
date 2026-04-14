@@ -473,7 +473,7 @@ const CrowdRenderer = (() => {
       card.setAttribute('aria-label', `${zone.name}: ${label}, ${pct}% full`);
       card.style.animationDelay = `${idx * 0.04}s`;
 
-      card.innerHTML = `
+      card.innerHTML = window.DOMPurify ? DOMPurify.sanitize(`
         <div class="crowd-card__top">
           <span class="crowd-card__emoji" aria-hidden="true">${zone.emoji}</span>
           <span class="crowd-card__pct" aria-hidden="true">${pct}%</span>
@@ -488,7 +488,7 @@ const CrowdRenderer = (() => {
           <div class="progress-fill" data-target="${pct}"></div>
         </div>
         ${sparklineHTML(zone.key, pct)}
-      `;
+      `) : ''; // Fallback if script blocked
       g.appendChild(card);
     });
 
@@ -611,7 +611,7 @@ const NavEngine = (() => {
     const el    = document.getElementById('routeResult');
 
     el.classList.remove('hidden');
-    el.innerHTML = `
+    el.innerHTML = window.DOMPurify ? DOMPurify.sanitize(`
       <div class="route-banner">
         <div class="route-banner__left">
           📍 ${from} &nbsp;→&nbsp; ${to}<br>
@@ -636,7 +636,7 @@ const NavEngine = (() => {
           </div>
         `).join('')}
       </div>
-    `;
+    `) : '';
 
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     UIUtils.showToast(`Route found · ~${route.time} min`);
@@ -686,7 +686,7 @@ const QueueRenderer = (() => {
       item.setAttribute('role', 'listitem');
       item.style.animationDelay = `${idx * 0.05}s`;
 
-      item.innerHTML = `
+      item.innerHTML = window.DOMPurify ? DOMPurify.sanitize(`
         <span class="queue-emoji" aria-hidden="true">${stall.emoji}</span>
         <div class="queue-info">
           <div class="queue-name">${stall.name}</div>
@@ -700,7 +700,7 @@ const QueueRenderer = (() => {
           <div class="queue-wait-lbl">Est. wait</div>
           <span class="q-badge ${badge.cls}">${badge.label}</span>
         </div>
-      `;
+      `) : '';
       c.appendChild(item);
     });
 
@@ -748,7 +748,7 @@ const ExitPredictor = (() => {
       div.className = 'exit-slot';
       div.setAttribute('role', 'listitem');
       div.style.animationDelay = `${i * 0.06}s`;
-      div.innerHTML = `
+      div.innerHTML = window.DOMPurify ? DOMPurify.sanitize(`
         <div class="exit-timing" style="
           background:${t.dim}; color:${t.color}; border-color:${t.border};
         ">${slot.label}</div>
@@ -761,12 +761,12 @@ const ExitPredictor = (() => {
           <div class="exit-info__desc">${slot.desc}</div>
         </div>
         <div class="exit-meter" aria-label="${slot.level} out of 5 congestion level">${segs}</div>
-      `;
+      `) : '';
       timeline.appendChild(div);
     });
 
     // Smart recommendation card
-    document.getElementById('exitRec').innerHTML = `
+    document.getElementById('exitRec').innerHTML = window.DOMPurify ? DOMPurify.sanitize(`
       <div class="exit-rec__icon" aria-hidden="true">💡</div>
       <div>
         <div class="exit-rec__title">StadiumIQ Recommendation</div>
@@ -777,7 +777,7 @@ const ExitPredictor = (() => {
           Exit B is expected to have <strong>high congestion</strong> post-match.
         </div>
       </div>
-    `;
+    `) : '';
   };
 
   return { render };

@@ -2,7 +2,12 @@
   "name": "stadium-iq",
   "version": "1.0.0",
   "description": "Smart Event Assistant",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "npx --yes live-server ."
+  },
+  "dependencies": {
+    "express": "^4.19.2"
   }
 }

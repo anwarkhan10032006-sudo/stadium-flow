@@ -96,12 +96,12 @@ If you have a Firebase project, you can connect real crowd data:
 }
 ```
 
-### 2. Add Your Config to `script.js`
+### 2. Add Your Config to `js/config.js`
 
-Replace the `FIREBASE_CONFIG` object at the top of `script.js`:
+Replace the `FIREBASE_CONFIG` object at the top of `js/config.js`:
 
 ```js
-const FIREBASE_CONFIG = {
+export const FIREBASE_CONFIG = {
   apiKey:            "AIza...",
   authDomain:        "your-project.firebaseapp.com",
   databaseURL:       "https://your-project-default-rtdb.firebaseio.com",
@@ -158,20 +158,35 @@ If Firebase credentials are not provided or the database is unreachable, the app
 
 ## File Structure
 
-```
+```text
 stadiumiq/
 ├── index.html     — App shell, semantic HTML, accessibility
 ├── style.css      — Full design system (Dark HUD theme)
-├── script.js      — Firebase + simulation + all UI logic
+├── js/            — Modular JavaScript application
+│   ├── app.js     — Entry point
+│   ├── config.js  — Firebase & Static configuration
+│   ├── core/      — Data, state, and routing engines
+│   ├── services/  — Firebase realtime service module
+│   └── ui/        — Component renderers
 └── README.md      — This file
 ```
+
+## Testing & Quality
+
+StadiumIQ utilizes Jest with JSDOM for robust automated testing across its logic engines.
+
+- **Run Tests via NPM:**
+  ```bash
+  npm test
+  ```
+- **Structure:** Core logic such as `DataEngine` crowd simulation bounds, and `NavEngine` route calculations are tested inside `__tests__/` with full DOM emulation for DOM manipulation queries. Tests conform to Babel implementations for standard ES Module formats.
 
 ## Connecting to Real IoT Data
 
 To connect to real sensor data instead of Firebase:
 
 1. Set up a WebSocket server that publishes crowd counts
-2. In `script.js`, replace `startSimulation()` with a WebSocket listener:
+2. In `js/app.js` or `js/core/stadiumManager.js`, replace `startSimulation()` with a WebSocket listener:
 
 ```js
 const ws = new WebSocket('wss://your-sensor-server.com/crowd');

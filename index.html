@@ -308,11 +308,7 @@
   ════════════════════════════════════════ -->
   <div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
-  <!-- Firebase SDK (modular, loaded async) -->
-  <script type="module">
-    // Firebase is loaded lazily in script.js after DOMContentLoaded.
-    // This empty module block prevents any parse errors if Firebase SDK is unavailable.
-  </script>
-  <script src="script.js" defer></script>
+  <!-- Core App Logic (ES Modules) -->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

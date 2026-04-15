@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "npx --yes live-server .",
-    "test": "jest",
+    "test": "jest --coverage",
     "lint": "eslint . --ext .js,.jsx"
   },
   "dependencies": {

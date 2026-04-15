@@ -1,14 +1,11 @@
-export const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+/**
+ * Static Configuration and Mapping Definitions
+ */
 
-export const STADIUMS = {
+/**
+ * Pre-defined stadiums configuration representing the structured data
+ * that would typically be fetched via Firestore in a production scaling environment.
+ */export const STADIUMS = {
   bangalore: {
     id: 'bangalore',
     name: 'M. Chinnaswamy Stadium',

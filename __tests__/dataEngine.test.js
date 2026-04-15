@@ -39,4 +39,15 @@ describe('DataEngine', () => {
     const gateABase = GlobalState.zones.find(z => z.key === 'gateA').base;
     expect(snapshot.crowd['gateA']).toBeGreaterThanOrEqual(Math.max(3, gateABase - 20));
   });
+
+  test('stress test: generate 10000 snapshots without memory bloat', () => {
+    const memoryBefore = process.memoryUsage().heapUsed;
+    for (let i = 0; i < 10000; i++) {
+        DataEngine.generateSnapshot();
+    }
+    const memoryAfter = process.memoryUsage().heapUsed;
+    const mbBloat = (memoryAfter - memoryBefore) / 1024 / 1024;
+    // Ensuring caching prevents rapid bloat 
+    expect(mbBloat).toBeLessThan(50); // Should be very minimal bloat with the optimizations
+  });
 });

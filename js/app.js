@@ -3,7 +3,7 @@ import { DataEngine } from './core/dataEngine.js';
 import { NavEngine } from './core/navEngine.js';
 import { StadiumManager } from './core/stadiumManager.js';
 import { FirebaseService } from './services/firebase.js';
-import { UIUtils, CrowdRenderer, QueueRenderer, ExitPredictor, AlertsEngine } from './ui/renderer.js';
+import { UIUtils, CrowdRenderer, QueueRenderer, ExitPredictor, AlertsEngine, MapsModule } from './ui/renderer.js';
 
 let _simTimer = null;
 
@@ -40,6 +40,7 @@ function onDataUpdate(data) {
 
 document.addEventListener('DOMContentLoaded', () => {
   DataEngine.initHistory();
+  MapsModule.init();
   UIUtils.startClock();
   UIUtils.initTicker();
   UIUtils.initBottomNav();

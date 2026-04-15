@@ -105,6 +105,8 @@ export const CrowdRenderer = (() => {
     const g = grid();
     if(!g) return;
     g.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
     GlobalState.zones.forEach((zone, idx) => {
       const pct   = crowdData[zone.key] ?? zone.base;
       const level = DataEngine.crowdLevel(pct);
@@ -133,8 +135,10 @@ export const CrowdRenderer = (() => {
         </div>
         ${sparklineHTML(zone.key, pct)}
       `) : '';
-      g.appendChild(card);
+      fragment.appendChild(card);
     });
+    
+    g.appendChild(fragment);
 
     requestAnimationFrame(() => {
       document.querySelectorAll('.progress-fill').forEach(el => { el.style.width = el.dataset.target + '%'; });
@@ -258,12 +262,35 @@ export const ExitPredictor = (() => {
 
     const rec = document.getElementById('exitRec');
     if(rec) {
+      // Dynamic Logic Implementation
+      const crowd = GlobalState.crowd;
+      const stadium = GlobalState.getActiveStadium();
+      
+      let bestExit = 'an exit';
+      let bestExitCongestion = 100;
+      let worstExit = 'an exit';
+      let worstExitCongestion = 0;
+
+      if (crowd) {
+        stadium.zones.filter(z => z.type === 'Exit Gate' || z.type === 'Entry / Exit').forEach(z => {
+          const congestion = crowd[z.key] || z.base;
+          if (congestion < bestExitCongestion) {
+            bestExitCongestion = congestion;
+            bestExit = z.name;
+          }
+          if (congestion > worstExitCongestion) {
+            worstExitCongestion = congestion;
+            worstExit = z.name;
+          }
+        });
+      }
+
       rec.innerHTML = window.DOMPurify ? window.DOMPurify.sanitize(`
         <div class="exit-rec__icon" aria-hidden="true">💡</div>
         <div>
-          <div class="exit-rec__title">StadiumIQ Recommendation</div>
+          <div class="exit-rec__title">StadiumIQ Dynamic Recommendation</div>
           <div class="exit-rec__desc">
-            Leave <strong>10 minutes before the final whistle</strong> via <em>Exit A</em> for the smoothest experience. Predicted wait: <strong>under 3 minutes</strong>. Exit B is expected to have <strong>high congestion</strong> post-match.
+            Leave <strong>10 minutes before the final whistle</strong> via <em>${bestExit}</em> for the smoothest experience. Predicted wait: <strong>under 3 minutes</strong>. ${worstExit !== bestExit ? `<em>${worstExit}</em> is expected to have <strong>high congestion</strong>.` : ''}
           </div>
         </div>
       `) : '';
@@ -310,10 +337,11 @@ export const AlertsEngine = (() => {
   return { render };
 })();
 
+import { GoogleMapsService } from '../services/googleMaps.js';
+
 export const MapsModule = (() => {
-  const openMaps = (query) => {
-    const encoded = encodeURIComponent(`${query} near stadium`);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encoded}`, '_blank', 'noopener,noreferrer');
+  const init = async () => {
+    await GoogleMapsService.loadScript();
   };
 
   const render = () => {
@@ -330,9 +358,9 @@ export const MapsModule = (() => {
         <span class="maps-tile__label">${svc.label}</span>
         <span class="maps-tile__sub">${svc.sub}</span>
       `) : '';
-      tile.addEventListener('click', () => openMaps(svc.query));
+      tile.addEventListener('click', () => GoogleMapsService.searchNearby(svc.query));
       grid.appendChild(tile);
     });
   };
-  return { render };
+  return { init, render };
 })();

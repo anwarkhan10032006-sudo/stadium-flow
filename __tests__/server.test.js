@@ -18,4 +18,11 @@ describe('Server Testing', () => {
     expect(res.headers).not.toHaveProperty('x-powered-by'); // Helmet should remove this
     expect(res.headers).toHaveProperty('content-security-policy'); // Our security CSP config should exist
   });
+
+  it('should expose the /api/config route safely', async () => {
+    process.env.FIREBASE_API_KEY = 'test_key';
+    const res = await request(app).get('/api/config');
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.firebase.apiKey).toEqual('test_key');
+  });
 });
